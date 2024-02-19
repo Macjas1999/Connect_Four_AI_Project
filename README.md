@@ -1,0 +1,3 @@
+# Connect Four AI Project
+This is a artificial intelligence sandbox to lear basics of how to create and train neural networks. Project is based on a simple idea of creating well known Connect Four game in command prompt with Python. I have chosen Python for this project because it has many convenient tools for creating neural networks. 
+Project is still in development and it might seem messy, but it is to be fixed in the future.

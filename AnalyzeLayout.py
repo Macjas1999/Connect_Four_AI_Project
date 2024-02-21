@@ -1,3 +1,7 @@
+REWARD_TWO = 1
+REWARD_THREE = 3
+RWARD_WIN = 100
+
 class AnalyzeLayout:
     def __init__(self, use_rand):
         self.playerONEscore = 0
@@ -29,9 +33,9 @@ class AnalyzeLayout:
                 if array[i][j] == array[i+1][j] == array[i+2][j]:
                     if array[i][j] != 0:
                         if array[i][j] == 1:
-                            self.playerONEscore += 3
+                            self.playerONEscore += REWARD_THREE
                         else:
-                            self.playerTWOscore += 3
+                            self.playerTWOscore += REWARD_THREE
                         
 
     def c3_horizontal(self, array):
@@ -40,9 +44,9 @@ class AnalyzeLayout:
                 if array[i][j] == array[i][j+1] == array[i][j+2]:
                     if array[i][j] != 0:
                         if array[i][j] == 1:
-                            self.playerONEscore += 3
+                            self.playerONEscore += REWARD_THREE
                         else:
-                            self.playerTWOscore += 3
+                            self.playerTWOscore += REWARD_THREE
 
 
     def c3_diagonal_f(self, array):
@@ -51,9 +55,9 @@ class AnalyzeLayout:
                 if array[i][j] == array[i+1][j+1] == array[i+2][j+2]:
                     if array[i][j] != 0:
                         if array[i][j] == 1:
-                            self.playerONEscore += 3
+                            self.playerONEscore += REWARD_THREE
                         else:
-                            self.playerTWOscore += 3
+                            self.playerTWOscore += REWARD_THREE
 
 
     def c3_diagonal_b(self, array):
@@ -62,9 +66,9 @@ class AnalyzeLayout:
                 if array[i][j] == array[i-1][j+1] == array[i-2][j+2]:
                     if array[i][j] != 0:
                         if array[i][j] == 1:
-                            self.playerONEscore += 3
+                            self.playerONEscore += REWARD_THREE
                         else:
-                            self.playerTWOscore += 3
+                            self.playerTWOscore += REWARD_THREE
     #2 in row
     def c2_vertical(self, array):
         for i in range(0, 5):
@@ -72,9 +76,9 @@ class AnalyzeLayout:
                 if array[i][j] == array[i+1][j]:
                     if array[i][j] != 0:
                         if array[i][j] == 1:
-                            self.playerONEscore += 1
+                            self.playerONEscore += REWARD_TWO
                         else:
-                            self.playerTWOscore += 1
+                            self.playerTWOscore += REWARD_TWO
                         
 
     def c2_horizontal(self, array):
@@ -83,9 +87,9 @@ class AnalyzeLayout:
                 if array[i][j] == array[i][j+1]:
                     if array[i][j] != 0:
                         if array[i][j] == 1:
-                            self.playerONEscore += 1
+                            self.playerONEscore += REWARD_TWO
                         else:
-                            self.playerTWOscore += 1
+                            self.playerTWOscore += REWARD_TWO
 
 
     def c2_diagonal_f(self, array):
@@ -94,9 +98,9 @@ class AnalyzeLayout:
                 if array[i][j] == array[i+1][j+1]:
                     if array[i][j] != 0:
                         if array[i][j] == 1:
-                            self.playerONEscore += 1
+                            self.playerONEscore += REWARD_TWO
                         else:
-                            self.playerTWOscore += 1
+                            self.playerTWOscore += REWARD_TWO
 
 
     def c2_diagonal_b(self, array):
@@ -105,9 +109,9 @@ class AnalyzeLayout:
                 if array[i][j] == array[i-1][j+1]:
                     if array[i][j] != 0:
                         if array[i][j] == 1:
-                            self.playerONEscore += 1
+                            self.playerONEscore += REWARD_TWO
                         else:
-                            self.playerTWOscore += 1
+                            self.playerTWOscore += REWARD_TWO
 
     def c4_vertical(self, array):
         for i in range(0, 3):
@@ -115,9 +119,9 @@ class AnalyzeLayout:
                 if array[i][j] == array[i+1][j] == array[i+2][j] == array[i+3][j]:
                     if array[i][j] != 0:
                         if array[i][j] == 1:
-                            self.playerONEscore += 100
+                            self.playerONEscore += RWARD_WIN
                         else:
-                            self.playerTWOscore += 100
+                            self.playerTWOscore += RWARD_WIN
 
     def c4_horizontal(self, array):
         for i in range(0, 6):
@@ -125,9 +129,9 @@ class AnalyzeLayout:
                 if array[i][j] == array[i][j+1] == array[i][j+2] == array[i][j+3]:
                     if array[i][j] != 0:
                         if array[i][j] == 1:
-                            self.playerONEscore += 100
+                            self.playerONEscore += RWARD_WIN
                         else:
-                            self.playerTWOscore += 100
+                            self.playerTWOscore += RWARD_WIN
 
 
     def c4_diagonal_f(self, array):
@@ -136,9 +140,9 @@ class AnalyzeLayout:
                 if array[i][j] == array[i+1][j+1] == array[i+2][j+2] == array[i+3][j+3]:
                     if array[i][j] != 0:
                         if array[i][j] == 1:
-                            self.playerONEscore += 100
+                            self.playerONEscore += RWARD_WIN
                         else:
-                            self.playerTWOscore += 100
+                            self.playerTWOscore += RWARD_WIN
 
 
     def c4_diagonal_b(self, array):
@@ -147,9 +151,9 @@ class AnalyzeLayout:
                 if array[i][j] == array[i-1][j+1] == array[i-2][j+2] == array[i-3][j+3]:
                     if array[i][j] != 0:
                         if array[i][j] == 1:
-                            self.playerONEscore += 100
+                            self.playerONEscore += RWARD_WIN
                         else:
-                            self.playerTWOscore += 100
+                            self.playerTWOscore += RWARD_WIN
 
 
     def check_draw(self, array):

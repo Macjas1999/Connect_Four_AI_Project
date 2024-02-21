@@ -3,6 +3,7 @@ import numpy as np
 from termcolor import colored
 import csv
 import random
+import time
 from keras.models import Sequential
 from keras.models import load_model
 from keras.layers import Dense
@@ -11,34 +12,51 @@ from createLearningSet import TrainingDataHandler
 
 class ConnectFourAI:
     def __init__(self):
-        self.model = self.build_model()
+        self.model_1 = self.build_model_player1()
+        self.model_2 = self.build_model_player2()
 
-    def build_model(self):
-        model = Sequential()
-        model.add(Dense(64, input_dim=42, activation='relu'))
-        model.add(Dense(64, activation='relu'))
-        #model.add(Dense(7, activation='softmax'))
-        #model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
-        model.add(Dense(7, activation='linear'))  # Single output neuron for the score
-        model.compile(optimizer='adam', loss='mean_squared_error', metrics=['mae'])
-        return model
+    def build_model_player1(self):
+        model_1 = Sequential()
+        model_1.add(Dense(64, input_dim=42, activation='relu'))
+        model_1.add(Dense(64, activation='relu'))
+        model_1.add(Dense(7, activation='linear'))  # Single output neuron for the score
+        model_1.compile(optimizer='adam', loss='mean_squared_error', metrics=['mae'])
+        return model_1
+    
+    def build_model_player2(self):
+        model_2 = Sequential()
+        model_2.add(Dense(64, input_dim=42, activation='relu'))
+        model_2.add(Dense(64, activation='relu'))
+        model_2.add(Dense(7, activation='linear'))  # Single output neuron for the score
+        model_2.compile(optimizer='adam', loss='mean_squared_error', metrics=['mae'])
+        return model_2
 
     def board_to_input(self, board):
         return np.array(board).flatten()
 
-    def train(self, X_train, y_train, epochs=100):
-        self.model.fit(X_train, y_train, epochs=epochs, verbose=0)
+    def train_player1(self, X_train, y_train, epochs=100):
+        self.model_1.fit(X_train, y_train, epochs=epochs, verbose=0)
 
-    def predict(self, board):
+    def train_player2(self, X_train, y_train, epochs=100):
+        self.model_2.fit(X_train, y_train, epochs=epochs, verbose=0)
+
+    def predict_player1(self, board):
         input_board = self.board_to_input(board)
-        prediction = self.model.predict(np.array([input_board]))
+        prediction = self.model_1.predict(np.array([input_board]))
         return np.argmax(prediction)
     
-    def save_model_as(self, name):
-        self.model.save(''.join(name,'.h5'))
+    def predict_player2(self, board):
+        input_board = self.board_to_input(board)
+        prediction = self.model_2.predict(np.array([input_board]))
+        return np.argmax(prediction)
+    
+    def save_model_as(self, name, model):
+        model.save(''.join(name,'.h5'))
 
-    def load_saved_model(self, name):
-        self.model = load_model(name)
+    def load_saved_model_player1(self, name):
+        self.model_1 = load_model(name)
+    def load_saved_model_player2(self, name):
+        self.model_2 = load_model(name)
 
 
 class RecordedGame:
@@ -166,15 +184,35 @@ class Board:
         else:
             self.check_draw()
 
-    def play_ai(self):
-        if self.player_turn == 2 and self.run:
-            column = self.ai.predict(self.array)
+    def play_ai_player1(self):
+        if self.player_turn == 1 and self.run:
+            column = self.ai.predict_player1(self.array)
             #self.add_piece(column, self.player_turn)
             if self.array[0][column] != 0:
                 #this is where ai is trying to add piece to full collumn/ need to add some penalty for ai below is temporaary
                 try_count = 0
                 while self.array[0][column] != 0:
-                    column = self.ai.predict(self.array)
+                    column = self.ai.predict_player1(self.array)
+                    try_count += 1
+                    if try_count > 50:
+                        random_input = random.randint(1,7)
+                        while self.array[0][random_input] != 0:
+                            random_input = random.randint(1,7)
+                            if self.array[0][random_input] == 0:
+                                column = random_input
+                                break
+            if self.add_piece(column-1, self.player_turn): # if aigen in range 1-7 then -1 is needed to conv to index
+                return True
+
+    def play_ai_player2(self):
+        if self.player_turn == 2 and self.run:
+            column = self.ai.predict_player2(self.array)
+            #self.add_piece(column, self.player_turn)
+            if self.array[0][column] != 0:
+                #this is where ai is trying to add piece to full collumn/ need to add some penalty for ai below is temporaary
+                try_count = 0
+                while self.array[0][column] != 0:
+                    column = self.ai.predict_player2(self.array)
                     try_count += 1
                     if try_count > 50:
                         random_input = random.randint(1,7)
@@ -190,17 +228,15 @@ class Board:
     def main_loop(self):
         while self.run:
             self.draw_board()
+            time.sleep(10)
             print(f'Player: {self.player_turn}')
             try:
                 if self.player_turn == 1:
-                    x = input()
-                    if x == 'e':
-                        break
-                    if self.add_piece(int(x)-1, self.player_turn):
+                    if self.play_ai_player1():
                         self.look_for_win_move()
                         self.player_turn = 2
                 else:
-                    if self.play_ai():
+                    if self.play_ai_player2():
                         self.look_for_win_move()
                         self.player_turn = 1
 
@@ -215,14 +251,15 @@ if __name__ == "__main__":
     app = Board()
     datahand = TrainingDataHandler('data1')
     #datahand.extract_data()
-    datahand.load_merged_data('resultextract_player2.csv')
+    datahand.load_merged_data('resultextract_player1.csv')
+    datahand.load_merged_labels('resultextract_player1.csv', 1)
     datahand.load_merged_labels('resultextract_player2.csv', 2)
     #seems i need one-hot vector for ytrain
     #for i in datahand.labels:
     #    i += 200
     #y_train_encoded = to_categorical(datahand.labels, num_classes=7)
     #app.ai.train(datahand.data, y_train_encoded)
-    app.ai.train(datahand.data, datahand.labels_2)
-
+    app.ai.train_player1(datahand.data, datahand.labels_1)
+    app.ai.train_player2(datahand.data, datahand.labels_2)
 
     app.main_loop()

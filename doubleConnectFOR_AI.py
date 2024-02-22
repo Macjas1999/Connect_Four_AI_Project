@@ -5,6 +5,7 @@ import csv
 import random
 import time
 from keras.models import Sequential
+from keras.models import save_model
 from keras.models import load_model
 from keras.layers import Dense
 from keras.utils import to_categorical
@@ -51,12 +52,29 @@ class ConnectFourAI:
         return np.argmax(prediction)
     
     def save_model_as(self, name, model):
-        model.save(''.join(name,'.h5'))
+        save_model(model, "{0}{1}".format(name,".h5"))
 
     def load_saved_model_player1(self, name):
         self.model_1 = load_model(name)
     def load_saved_model_player2(self, name):
         self.model_2 = load_model(name)
+
+    def train_only_save(self):
+        datahand = TrainingDataHandler('data1')
+        #datahand.extract_data()
+        datahand.load_merged_data('resultextract_player1.csv')
+        datahand.load_merged_labels('resultextract_player1.csv', 1)
+        datahand.load_merged_labels('resultextract_player2.csv', 2)
+
+        self.train_player1(datahand.data, datahand.labels_1)
+        self.train_player2(datahand.data, datahand.labels_2)
+
+        self.save_model_as("model_1_v1", self.model_1)
+        self.save_model_as("model_2_v1", self.model_2)
+
+    def load_model_v1(self):
+        self.load_saved_model_player1("model_1_v1.h5")
+        self.load_saved_model_player2("model_2_v1.h5")
 
 
 class RecordedGame:
@@ -91,7 +109,16 @@ class Board:
         self.player_turn = 1
         clear = lambda: os.system('tput reset')
         clear()
-        self.records = RecordedGame() 
+        self.records = RecordedGame()
+        self.try_count = 0
+
+    def reset_game(self):
+        self.array = [[0] * 7 for _ in range(6)]
+        self.winning = 0
+        self.run = True
+        self.player_turn = 1
+        clear = lambda: os.system('tput reset')
+        clear()
 
     def clear(self):
         lambda : os.system('tput reset')
@@ -168,6 +195,22 @@ class Board:
 
 
     # Main win-move lookup
+    # def look_for_win_move(self):
+    #     #Main algorythm
+    #     self.check_vertical()
+    #     self.check_horizontal()
+    #     self.check_diagonal_b()
+    #     self.check_diagonal_f()
+    #     if self.winning != 0:
+    #         os.system('tput clear')
+    #         self.draw_board()
+    #         print("Winner is Player" + str(self.winning))
+    #         x = input('Enter anything to exit')
+    #         self.run = False
+    #         return
+    #     else:
+    #         self.check_draw()
+     # Main win-move lookup for multiple games
     def look_for_win_move(self):
         #Main algorythm
         self.check_vertical()
@@ -177,8 +220,6 @@ class Board:
         if self.winning != 0:
             os.system('tput clear')
             self.draw_board()
-            print("Winner is Player" + str(self.winning))
-            x = input('Enter anything to exit')
             self.run = False
             return
         else:
@@ -188,19 +229,19 @@ class Board:
         if self.player_turn == 1 and self.run:
             column = self.ai.predict_player1(self.array)
             #self.add_piece(column, self.player_turn)
-            if self.array[0][column] != 0:
+            if self.array[0][column-1] != 0:
                 #this is where ai is trying to add piece to full collumn/ need to add some penalty for ai below is temporaary
-                try_count = 0
-                while self.array[0][column] != 0:
+                while self.array[0][column-1] != 0:
                     column = self.ai.predict_player1(self.array)
-                    try_count += 1
-                    if try_count > 50:
+                    if self.try_count > 3:
                         random_input = random.randint(1,7)
-                        while self.array[0][random_input] != 0:
+                        while self.array[0][random_input-1] != 0:
                             random_input = random.randint(1,7)
-                            if self.array[0][random_input] == 0:
+                            if self.array[0][random_input-1] == 0:
                                 column = random_input
+                                self.try_count = 0
                                 break
+                    self.try_count += 1
             if self.add_piece(column-1, self.player_turn): # if aigen in range 1-7 then -1 is needed to conv to index
                 return True
 
@@ -208,27 +249,27 @@ class Board:
         if self.player_turn == 2 and self.run:
             column = self.ai.predict_player2(self.array)
             #self.add_piece(column, self.player_turn)
-            if self.array[0][column] != 0:
+            if self.array[0][column-1] != 0:
                 #this is where ai is trying to add piece to full collumn/ need to add some penalty for ai below is temporaary
-                try_count = 0
-                while self.array[0][column] != 0:
+                while self.array[0][column-1] != 0:
                     column = self.ai.predict_player2(self.array)
-                    try_count += 1
-                    if try_count > 50:
+                    if self.try_count > 3:
                         random_input = random.randint(1,7)
-                        while self.array[0][random_input] != 0:
+                        while self.array[0][random_input-1] != 0:
                             random_input = random.randint(1,7)
-                            if self.array[0][random_input] == 0:
+                            if self.array[0][random_input-1] == 0:
                                 column = random_input
+                                self.try_count = 0
                                 break
-
+                    self.try_count += 1
             if self.add_piece(column-1, self.player_turn): # if aigen in range 1-7 then -1 is needed to conv to index
                 return True
-            
+
+
     def main_loop(self):
         while self.run:
             self.draw_board()
-            time.sleep(10)
+            time.sleep(0.5)
             print(f'Player: {self.player_turn}')
             try:
                 if self.player_turn == 1:
@@ -249,17 +290,24 @@ class Board:
 
 if __name__ == "__main__":
     app = Board()
-    datahand = TrainingDataHandler('data1')
-    #datahand.extract_data()
-    datahand.load_merged_data('resultextract_player1.csv')
-    datahand.load_merged_labels('resultextract_player1.csv', 1)
-    datahand.load_merged_labels('resultextract_player2.csv', 2)
-    #seems i need one-hot vector for ytrain
-    #for i in datahand.labels:
-    #    i += 200
-    #y_train_encoded = to_categorical(datahand.labels, num_classes=7)
-    #app.ai.train(datahand.data, y_train_encoded)
-    app.ai.train_player1(datahand.data, datahand.labels_1)
-    app.ai.train_player2(datahand.data, datahand.labels_2)
+    # datahand = TrainingDataHandler('data1')
+    # #datahand.extract_data()
+    # datahand.load_merged_data('resultextract_player1.csv')
+    # datahand.load_merged_labels('resultextract_player1.csv', 1)
+    # datahand.load_merged_labels('resultextract_player2.csv', 2)
+    # #seems i need one-hot vector for ytrain
+    # #for i in datahand.labels:
+    # #    i += 200
+    # #y_train_encoded = to_categorical(datahand.labels, num_classes=7)
+    # #app.ai.train(datahand.data, y_train_encoded)
+    # app.ai.train_player1(datahand.data, datahand.labels_1)
+    # app.ai.train_player2(datahand.data, datahand.labels_2)
+
+    #app.ai.train_only_save()
+
+    app.ai.load_model_v1()
 
     app.main_loop()
+    for i in range(0,10):
+         app.reset_game()
+         app.main_loop()

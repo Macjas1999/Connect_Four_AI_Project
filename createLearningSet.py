@@ -87,7 +87,7 @@ if __name__ == "__main__":
     mrg = TrainingDataHandler('data1')
     mrg.extract_data()
     mrg.save_extracted('resultextract_player1.csv', 1)
-    mrg.save_extracted('resultextract_player1.csv', 2)
+    mrg.save_extracted('resultextract_player2.csv', 2)
     #mrg.load_merged('resultextract.csv')
     print(mrg.data.shape)  # (num_samples, flattened_board_size)
     print(mrg.labels_1.shape)  # (num_samples, 2)

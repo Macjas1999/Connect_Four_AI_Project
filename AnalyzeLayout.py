@@ -1,12 +1,16 @@
 REWARD_TWO = 1
 REWARD_THREE = 3
 RWARD_WIN = 100
+PENALTY_FILLED_UP_TRY = 10
 
 class AnalyzeLayout:
-    def __init__(self, use_rand):
+    def __init__(self):
         self.playerONEscore = 0
         self.playerTWOscore = 0
-        self.random_input_game = use_rand
+        #self.random_input_game = use_rand
+
+        self.playerONE_fill_miss = 0
+        self.playerTWO_fill_miss = 0
 
 
     def analyzeBoard(self, array):
@@ -24,7 +28,19 @@ class AnalyzeLayout:
         self.c2_vertical(array)
         self.c2_diagonal_f(array)
         self.c2_diagonal_b(array)
+
+        self.playerONEscore -= self.playerONE_fill_miss
+        self.playerTWOscore -= self.playerTWO_fill_miss
+
         self.check_draw(array)
+        
+    def reset_analyzer(self):
+        self.playerONEscore = 0
+        self.playerTWOscore = 0
+        #self.random_input_game = use_rand
+
+        self.playerONE_fill_miss = 0
+        self.playerTWO_fill_miss = 0
 
     #3 in row
     def c3_vertical(self, array):
@@ -155,6 +171,13 @@ class AnalyzeLayout:
                         else:
                             self.playerTWOscore += RWARD_WIN
 
+    def penalty_for_filling_filled(self, player):
+        if player == 1:
+            self.playerONE_fill_miss += PENALTY_FILLED_UP_TRY
+        elif player == 2:
+            self.playerTWO_fill_miss += PENALTY_FILLED_UP_TRY
+        else:
+            pass
 
     def check_draw(self, array):
         if all(all(cell != 0 for cell in row) for row in array):

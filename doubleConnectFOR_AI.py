@@ -9,7 +9,7 @@ from keras.models import save_model
 from keras.models import load_model
 from keras.layers import Dense
 from keras.utils import to_categorical
-from createLearningSet import TrainingDataHandler
+from TrainingDataHandler import TrainingDataHandler
 
 class ConnectFourAI:
     def __init__(self):
@@ -264,7 +264,6 @@ class Board:
                     self.try_count += 1
             if self.add_piece(column-1, self.player_turn): # if aigen in range 1-7 then -1 is needed to conv to index
                 return True
-
 
     def main_loop(self):
         while self.run:

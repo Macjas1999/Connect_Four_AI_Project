@@ -1,7 +1,7 @@
 import csv
 
 
-class RecordedGame:
+class RecordGamestate:
     def __init__(self) -> None:
         self.recordedGameArray = []
 

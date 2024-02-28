@@ -6,7 +6,7 @@ from keras.models import Sequential
 from keras.models import load_model
 from keras.layers import Dense
 from keras.utils import to_categorical
-from createLearningSet import TrainingDataHandler
+from TrainingDataHandler import TrainingDataHandler
 from Recorder import RecordedGame
 
 class ConnectFourAI:

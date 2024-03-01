@@ -1,7 +1,8 @@
-REWARD_TWO = 1
-REWARD_THREE = 3
-RWARD_WIN = 100
-PENALTY_FILLED_UP_TRY = 10
+REWARD_ONE = 1
+REWARD_TWO = 4
+REWARD_THREE = 16
+RWARD_WIN = 192
+PENALTY_FILLED_UP_TRY = 32
 
 class AnalyzeLayout:
     def __init__(self):
@@ -16,6 +17,7 @@ class AnalyzeLayout:
     def analyzeBoard(self, array):
         self.playerONEscore = 0
         self.playerTWOscore = 0
+        self.c1_all(array)
         self.c4_vertical(array)
         self.c4_horizontal(array)
         self.c4_diagonal_f(array)
@@ -42,6 +44,18 @@ class AnalyzeLayout:
         self.playerONE_fill_miss = 0
         self.playerTWO_fill_miss = 0
 
+    def c1_all(self, array):
+        for i in range(0,6):
+            for j in range(0,7):
+                match array[i][j]:
+                    case 0:
+                        pass
+                    case 1:
+                        self.playerONEscore += REWARD_ONE
+                    case 2:
+                        self.playerTWOscore += REWARD_ONE
+
+
     #3 in row
     def c3_vertical(self, array):
         for i in range(0, 4):
@@ -51,8 +65,7 @@ class AnalyzeLayout:
                         if array[i][j] == 1:
                             self.playerONEscore += REWARD_THREE
                         else:
-                            self.playerTWOscore += REWARD_THREE
-                        
+                            self.playerTWOscore += REWARD_THREE                
 
     def c3_horizontal(self, array):
         for i in range(0, 6):

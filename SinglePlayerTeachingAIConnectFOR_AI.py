@@ -2,28 +2,27 @@ import os
 from termcolor import colored
 import random
 import time
-import numpy as np
 
 from MainConnectFourAI import ConnectFourAI
 from Recorder import RecordGamestate
 from AnalyzeLayout import AnalyzeLayout
 from TrainingDataHandler import TrainingDataHandler
 
-DATA_PATH = "/home/maciej/Desktop/Python/Connect_Four_AI_Project/data8/"
-RESULTS_PATH = "/home/maciej/Desktop/Python/Connect_Four_AI_Project/results/"
+#DATA_PATH = "/home/maciej/Desktop/Python/Connect_Four_AI_Project/data5/"
+#RESULTS_PATH = "/home/maciej/Desktop/Python/Connect_Four_AI_Project/results/"
 
 
-MODEL_ONE_SAVED_FILENAME = "model_1_v9.h5"
-MODEL_TWO_SAVED_FILENAME = "model_2_v9.h5"
+MODEL_ONE_SAVED_FILENAME = "model_1_v6.h5"
+MODEL_TWO_SAVED_FILENAME = "model_2_v6.h5"
 
-SLEEP_TIME = 0.05
+SLEEP_TIME = 0.2
 
 class Board:
     def __init__(self):
         self.ai = ConnectFourAI(MODEL_ONE_SAVED_FILENAME, MODEL_TWO_SAVED_FILENAME)
         self.records = RecordGamestate()
         self.analyzer = AnalyzeLayout()
-        self.training_data_handler = TrainingDataHandler(DATA_PATH)
+        #self.training_data_handler = TrainingDataHandler(DATA_PATH)
 
         self.array = [[0] * 7 for _ in range(6)]
         self.winning = 0
@@ -115,6 +114,25 @@ class Board:
         if all(all(cell != 0 for cell in row) for row in self.array):
             print("It's a draw!")
             self.run = False
+
+#### These two functions are used wether games are looped to gather data
+    # Main win-move lookup
+    # def look_for_win_move(self):
+    #     #Main algorythm
+    #     self.check_vertical()
+    #     self.check_horizontal()
+    #     self.check_diagonal_b()
+    #     self.check_diagonal_f()
+    #     if self.winning != 0:
+    #         os.system('tput clear')
+    #         self.draw_board()
+    #         print("Winner is Player" + str(self.winning))
+    #         x = input('Enter anything to exit')
+    #         self.run = False
+    #         return
+    #     else:
+    #         self.check_draw()
+     # Main win-move lookup for multiple games
             
     def look_for_win_move(self):
         #Main algorythm
@@ -129,6 +147,7 @@ class Board:
             return
         else:
             self.check_draw()
+####
 
     def play_ai_player(self, model):
         if self.run: # if one player is not ai you need to specify wchih player it is
@@ -152,17 +171,34 @@ class Board:
             if self.add_piece(column-1, self.player_turn): # if aigen in range 1-7 then -1 is needed to conv to index
                 self.analyzer.analyzeBoard(self.array)
                 return True
+    def play_player(self):
+        if self.run:
+            try:
+                x = input()
+                if x == 'e':
+                    self.run = False
+                    os._exit(0)
+                if self.array[0][int(x)-1] != 0:
+                    raise Exception("Collumn is full")
 
-    def main_loop(self, game_num):
-        self.seed = 666
+                if self.add_piece(int(x)-1, self.player_turn):
+                    os.system('tput clear') #displaying only one board
+                    return True
+                else:
+                    raise Exception("Input is out of range")
+            except:
+                print('Invalid input')
+                x = input('Enter anything to continue')
+                os.system('tput clear') #displaying only one board            
+
+    def main_loop(self):
         while self.run:
             self.draw_board()
             time.sleep(SLEEP_TIME)
             print(f'Player: {self.player_turn}')
-            print(f'Game: {game_num}')
             try:
                 if self.player_turn == 1:
-                    if self.play_ai_player(self.ai.model_1):
+                    if self.play_player():
                         self.look_for_win_move()
                         self.player_turn = 2
                 else:
@@ -171,8 +207,7 @@ class Board:
                         self.player_turn = 1
 
                 self.turn_counter += 1
-                ###Recording
-                self.records.snapGamestateEveryturn(self.seed, self.array, self.turn_counter, self.analyzer.playerONEscore, self.analyzer.playerTWOscore, DATA_PATH)
+                #self.records.snapGamestateEveryturn(self.seed, self.array, self.turn_counter, self.analyzer.playerONEscore, self.analyzer.playerTWOscore, DATA_PATH)
                 os.system('tput clear')
 
             except:
@@ -180,89 +215,51 @@ class Board:
                 #x = input('Enter anything to continue')
                 os.system('tput clear')
 
-    def remove_files(self, directory):
-        for filename in os.listdir(directory):
-            file_path = "{0}{1}".format(directory, filename)
-            try:
-                if os.path.isfile(file_path):
-                    os.remove(file_path)
-                
-            except Exception as e:
-                print("Error removing")
-
-    
 if __name__ == "__main__":
     app = Board()
 
-    # for i in range(0,10):
+    # for i in range(0,30):
     #     app.ai.load_model_v1()
 
     #     app.main_loop()
-    #     for j in range(0,20):
+    #     for j in range(0,30):
     #          app.reset_game()
     #          app.analyzer.reset_analyzer()
     #          app.main_loop()
 
     #     app.training_data_handler.extract_data()
-    #     app.training_data_handler.save_extracted("{0}{1}".format(RESULTS_PATH, "resultextract_player_1_v7.csv"), 1)
-    #     app.training_data_handler.save_extracted("{0}{1}".format(RESULTS_PATH,"resultextract_player_2_v7.csv"), 2)
+    #     app.training_data_handler.save_extracted("{0}{1}".format(RESULTS_PATH, "resultextract_player_1_v5.csv"), 1)
+    #     app.training_data_handler.save_extracted("{0}{1}".format(RESULTS_PATH,"resultextract_player_2_v5.csv"), 2)
 
-    # app.training_data_handler.load_merged_data("{0}{1}".format(RESULTS_PATH, "resultextract_player_1_v6.csv"))
-    # app.training_data_handler.load_merged_labels("{0}{1}".format(RESULTS_PATH, "resultextract_player_1_v6.csv"), 1)
-    # app.training_data_handler.load_merged_labels("{0}{1}".format(RESULTS_PATH,"resultextract_player_2_v6.csv"), 2)
+    #     app.training_data_handler.load_merged_data("{0}{1}".format(RESULTS_PATH, "resultextract_player_1_v5.csv"))
+    #     app.training_data_handler.load_merged_labels("{0}{1}".format(RESULTS_PATH, "resultextract_player_1_v5.csv"), 1)
+    #     app.training_data_handler.load_merged_labels("{0}{1}".format(RESULTS_PATH,"resultextract_player_2_v5.csv"), 2)
 
-    # app.ai.train_player(app.ai.model_1, app.training_data_handler.data, app.training_data_handler.labels_1)
-    # app.ai.train_player(app.ai.model_2, app.training_data_handler.data, app.training_data_handler.labels_2)
-    #     app.ai.save_model_as("model_1_v7", app.ai.model_1)
-    #     app.ai.save_model_as("model_2_v7", app.ai.model_2)
+    #     app.ai.train_player(app.ai.model_1, app.training_data_handler.data, app.training_data_handler.labels_1)
+    #     app.ai.train_player(app.ai.model_2, app.training_data_handler.data, app.training_data_handler.labels_2)
+    #     app.ai.save_model_as("model_1_v5", app.ai.model_1)
+    #     app.ai.save_model_as("model_2_v5", app.ai.model_2)
 
+
+
+
+    #app.training_data_handler.load_merged_data("{0}{1}".format(RESULTS_PATH, "resultextract_player_1_v6.csv"))
+    #app.training_data_handler.load_merged_labels("{0}{1}".format(RESULTS_PATH, "resultextract_player_1_v6.csv"), 1)
+    #app.training_data_handler.load_merged_labels("{0}{1}".format(RESULTS_PATH,"resultextract_player_2_v6.csv"), 2)
+
+    #app.ai.train_player(app.ai.model_1, app.training_data_handler.data, app.training_data_handler.labels_1)
+    #app.ai.train_player(app.ai.model_2, app.training_data_handler.data, app.training_data_handler.labels_2)
+    #app.ai.save_model_as("model_1_v6", app.ai.model_1)
+    #app.ai.save_model_as("model_2_v6", app.ai.model_2)
 
 
     app.ai.load_model_v1()
-    app.main_loop(0)
-    for i in range(1,50):
-        app.training_data_handler.extract_data()
-        app.training_data_handler.save_extracted("{0}{1}".format(RESULTS_PATH, "resultextract_player_1_v9.csv"), 1)
-        app.training_data_handler.save_extracted("{0}{1}".format(RESULTS_PATH,"resultextract_player_2_v9.csv"), 2)
 
-        app.training_data_handler.load_merged_data("{0}{1}".format(RESULTS_PATH, "resultextract_player_1_v9.csv"))
-        app.training_data_handler.load_merged_labels("{0}{1}".format(RESULTS_PATH, "resultextract_player_1_v9.csv"), 1)
-        app.training_data_handler.load_merged_labels("{0}{1}".format(RESULTS_PATH,"resultextract_player_2_v9.csv"), 2)
-
-        app.ai.train_player(app.ai.model_1, app.training_data_handler.data, app.training_data_handler.labels_1)
-        app.ai.train_player(app.ai.model_2, app.training_data_handler.data, app.training_data_handler.labels_2)
-       
-        app.remove_files(DATA_PATH)
-        os.remove("{0}{1}".format(RESULTS_PATH, "resultextract_player_1_v9.csv"))
-        os.remove("{0}{1}".format(RESULTS_PATH, "resultextract_player_2_v9.csv"))
-
-
-        app.reset_game()
-        app.analyzer.reset_analyzer()
-        app.main_loop(i)
-
-
-
-    app.ai.save_model_as("model_1_v9", app.ai.model_1)
-    app.ai.save_model_as("model_2_v9", app.ai.model_2)
-    
-    # app.training_data_handler.load_merged_data("{0}{1}".format(RESULTS_PATH, "resultextract_player_1_v6.csv"))
-    # app.training_data_handler.load_merged_labels("{0}{1}".format(RESULTS_PATH, "resultextract_player_1_v6.csv"), 1)
-    # app.training_data_handler.load_merged_labels("{0}{1}".format(RESULTS_PATH,"resultextract_player_2_v6.csv"), 2)
-
-    # app.ai.train_player(app.ai.model_1, app.training_data_handler.data, app.training_data_handler.labels_1)
-    # app.ai.train_player(app.ai.model_2, app.training_data_handler.data, app.training_data_handler.labels_2)
-    # app.ai.save_model_as("model_1_v6", app.ai.model_1)
-    # app.ai.save_model_as("model_2_v6", app.ai.model_2)
-
-
-    # app.ai.load_model_v1()
-
-    # app.main_loop()
-    # for i in range(0,5):
-    #      app.reset_game()
-    #      app.analyzer.reset_analyzer()
-    #      app.main_loop()
+    app.main_loop()
+    for i in range(0,5):
+         app.reset_game()
+         app.analyzer.reset_analyzer()
+         app.main_loop()
 
     # # app.training_data_handler.extract_data()
     # # app.training_data_handler.save_extracted("{0}{1}".format(RESULTS_PATH, "resultextract_player_1_v3.csv"), 1)

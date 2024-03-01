@@ -2,6 +2,7 @@ import numpy as np
 from keras.models import Sequential
 from keras.models import save_model
 from keras.models import load_model
+from keras.optimizers import Adam
 from keras.layers import Dense
 from keras.utils import to_categorical
 from TrainingDataHandler import TrainingDataHandler
@@ -20,7 +21,8 @@ class ConnectFourAI:
         model.add(Dense(64, input_dim=42, activation='relu'))
         model.add(Dense(64, activation='relu'))
         model.add(Dense(7, activation='linear'))  # Single output neuron for the score
-        model.compile(optimizer='adam', loss='mean_squared_error', metrics=['mae'])
+        optimizer = Adam(lr=0.001)  # Adaptive stuff was 001
+        model.compile(optimizer=optimizer, loss='mean_squared_error', metrics=['mae'])
         return model
 
     def board_to_input(self, board):
@@ -36,19 +38,6 @@ class ConnectFourAI:
     
     def save_model_as(self, name, model):
         save_model(model, "{0}{1}".format(name,".h5"))
-
-    def train_only_save(self):
-        datahand = TrainingDataHandler('data1')
-        #datahand.extract_data()
-        datahand.load_merged_data('resultextract_player1.csv')
-        datahand.load_merged_labels('resultextract_player1.csv', 1)
-        datahand.load_merged_labels('resultextract_player2.csv', 2)
-
-        self.train_player(self.model_1, datahand.data, datahand.labels_1)
-        self.train_player(self.model_2, datahand.data, datahand.labels_2)
-
-        self.save_model_as("model_1_v1", self.model_1)
-        self.save_model_as("model_2_v1", self.model_2)
 
     def load_model_v1(self):
         self.model_1 = load_model(self.model_1_saved_filename)

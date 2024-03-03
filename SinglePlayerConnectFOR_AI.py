@@ -8,12 +8,20 @@ from Recorder import RecordGamestate
 from AnalyzeLayout import AnalyzeLayout
 from TrainingDataHandler import TrainingDataHandler
 
-DATA_PATH = "/home/maciej/Desktop/Python/Connect_Four_AI_Project/data8/"
-RESULTS_PATH = "/home/maciej/Desktop/Python/Connect_Four_AI_Project/results/"
 HUMAN_AI_GAMES = "/home/maciej/Desktop/Python/Connect_Four_AI_Project/dataHA/"
 
-MODEL_ONE_SAVED_FILENAME = "model_1_v9.h5"
-MODEL_TWO_SAVED_FILENAME = "model_2_v9.h5"
+DATA_PATH = "/home/maciej/Desktop/Python/Connect_Four_AI_Project/dataBuff/"
+RESULTS_PATH = "/home/maciej/Desktop/Python/Connect_Four_AI_Project/results/"
+
+RESULTS_EXT_ONE = "resultextract_player_1_vBuff.csv"
+RESULTS_EXT_TWO = "resultextract_player_2_vBuff.csv"
+
+MODEL_ONE_SAVED_FILENAME = "model_1_v10.h5"
+MODEL_TWO_SAVED_FILENAME = "model_2_v10.h5"
+
+MODEL_ONE_NAME = "model_1_v10"
+MODEL_TWO_NAME = "model_2_v10"
+
 
 SLEEP_TIME = 0.2
 
@@ -139,7 +147,7 @@ class Board:
                 #this is where ai is trying to add piece to full collumn/ need to add some penalty for ai below is temporaary
                 while self.array[0][column-1] != 0:
                     column = self.ai.predict_player(model, self.array)
-                    self.analyzer.penalty_for_filling_filled(self.player_turn)
+                    #self.analyzer.penalty_for_filling_filled(self.player_turn)
                     if self.try_count > 2:
                         random_input = random.randint(1,7)
                         while self.array[0][random_input-1] != 0:
@@ -228,22 +236,22 @@ if __name__ == "__main__":
     app.main_loop()
     while True:
         app.training_data_handler.extract_data()
-        app.training_data_handler.save_extracted("{0}{1}".format(RESULTS_PATH, "resultextract_player_1_v9.csv"), 1)
-        app.training_data_handler.save_extracted("{0}{1}".format(RESULTS_PATH,"resultextract_player_2_v9.csv"), 2)
+        app.training_data_handler.save_extracted("{0}{1}".format(RESULTS_PATH, RESULTS_EXT_ONE), 1)
+        app.training_data_handler.save_extracted("{0}{1}".format(RESULTS_PATH,RESULTS_EXT_TWO), 2)
 
-        app.training_data_handler.load_merged_data("{0}{1}".format(RESULTS_PATH, "resultextract_player_1_v9.csv"))
-        app.training_data_handler.load_merged_labels("{0}{1}".format(RESULTS_PATH, "resultextract_player_1_v9.csv"), 1)
-        app.training_data_handler.load_merged_labels("{0}{1}".format(RESULTS_PATH,"resultextract_player_2_v9.csv"), 2)
+        app.training_data_handler.load_merged_data("{0}{1}".format(RESULTS_PATH, RESULTS_EXT_ONE))
+        app.training_data_handler.load_merged_labels("{0}{1}".format(RESULTS_PATH, RESULTS_EXT_ONE), 1)
+        app.training_data_handler.load_merged_labels("{0}{1}".format(RESULTS_PATH,RESULTS_EXT_TWO), 2)
 
         app.ai.train_player(app.ai.model_1, app.training_data_handler.data, app.training_data_handler.labels_1)
         app.ai.train_player(app.ai.model_2, app.training_data_handler.data, app.training_data_handler.labels_2)
       
-        app.ai.save_model_as("model_1_v9", app.ai.model_1)
-        app.ai.save_model_as("model_2_v9", app.ai.model_2)  
+        app.ai.save_model_as(MODEL_ONE_NAME, app.ai.model_1)
+        app.ai.save_model_as(MODEL_TWO_NAME, app.ai.model_2)  
 
         app.remove_files(DATA_PATH)
-        os.remove("{0}{1}".format(RESULTS_PATH, "resultextract_player_1_v9.csv"))
-        os.remove("{0}{1}".format(RESULTS_PATH, "resultextract_player_2_v9.csv"))
+        os.remove("{0}{1}".format(RESULTS_PATH, RESULTS_EXT_ONE))
+        os.remove("{0}{1}".format(RESULTS_PATH, RESULTS_EXT_TWO))
 
         app.reset_game()
         app.analyzer.reset_analyzer()

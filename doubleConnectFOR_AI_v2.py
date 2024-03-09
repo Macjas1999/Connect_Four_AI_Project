@@ -9,17 +9,19 @@ from Recorder import RecordGamestate
 from AnalyzeLayout import AnalyzeLayout
 from TrainingDataHandler import TrainingDataHandler
 
+ARCHV_DATA = "/home/maciej/Desktop/Python/Connect_Four_AI_Project/dataONW/" 
+
 DATA_PATH = "/home/maciej/Desktop/Python/Connect_Four_AI_Project/dataBuff/"
 RESULTS_PATH = "/home/maciej/Desktop/Python/Connect_Four_AI_Project/results/"
 
 RESULTS_EXT_ONE = "resultextract_player_1_vBuff.csv"
 RESULTS_EXT_TWO = "resultextract_player_2_vBuff.csv"
 
-MODEL_ONE_SAVED_FILENAME = "model_1_v10.h5"
-MODEL_TWO_SAVED_FILENAME = "model_2_v10.h5"
+MODEL_ONE_SAVED_FILENAME = "model_1_vt3.h5"
+MODEL_TWO_SAVED_FILENAME = "model_2_vt3.h5"
 
-MODEL_ONE_NAME = "model_1_v10"
-MODEL_TWO_NAME = "model_2_v10"
+MODEL_ONE_NAME = "model_1_vt3"
+MODEL_TWO_NAME = "model_2_vt3"
 
 SLEEP_TIME = 0.05
 
@@ -160,6 +162,7 @@ class Board:
 
     def main_loop(self, game_num):
         self.seed = 666
+        #self.seed = random.randint(100000, 999999)
         while self.run:
             self.draw_board()
             time.sleep(SLEEP_TIME)
@@ -184,6 +187,9 @@ class Board:
                 print('Invalid input')
                 #x = input('Enter anything to continue')
                 os.system('tput clear')
+        #self.records.snapGamestateEveryturn(self.seed, self.array, self.turn_counter, self.analyzer.playerONEscore, self.analyzer.playerTWOscore, DATA_PATH)
+        #self.records.snapGamestateEveryturn(self.seed, self.array, self.turn_counter, self.analyzer.playerONEscore, self.analyzer.playerTWOscore, ARCHV_DATA)
+
 
     def remove_files(self, directory):
         for filename in os.listdir(directory):
@@ -225,7 +231,7 @@ if __name__ == "__main__":
 
     app.ai.load_model_v1()
     app.main_loop(0)
-    for i in range(1,200):
+    for i in range(1,100):
         app.training_data_handler.extract_data()
         app.training_data_handler.save_extracted("{0}{1}".format(RESULTS_PATH, RESULTS_EXT_ONE), 1)
         app.training_data_handler.save_extracted("{0}{1}".format(RESULTS_PATH,RESULTS_EXT_TWO), 2)
@@ -253,14 +259,14 @@ if __name__ == "__main__":
     
     ########################
 
-    # app.training_data_handler.load_merged_data("{0}{1}".format(RESULTS_PATH, "resultextract_player_1_v10.csv"))
-    # app.training_data_handler.load_merged_labels("{0}{1}".format(RESULTS_PATH, "resultextract_player_1_v10.csv"), 1)
-    # app.training_data_handler.load_merged_labels("{0}{1}".format(RESULTS_PATH,"resultextract_player_2_v10.csv"), 2)
+    # app.training_data_handler.load_merged_data("{0}{1}".format(RESULTS_PATH, "resultextract_player_1_v11.csv"))
+    # app.training_data_handler.load_merged_labels("{0}{1}".format(RESULTS_PATH, "resultextract_player_1_v11.csv"), 1)
+    # app.training_data_handler.load_merged_labels("{0}{1}".format(RESULTS_PATH,"resultextract_player_2_v11.csv"), 2)
 
     # app.ai.train_player(app.ai.model_1, app.training_data_handler.data, app.training_data_handler.labels_1)
     # app.ai.train_player(app.ai.model_2, app.training_data_handler.data, app.training_data_handler.labels_2)
-    # app.ai.save_model_as("model_1_v10", app.ai.model_1)
-    # app.ai.save_model_as("model_2_v10", app.ai.model_2)
+    # app.ai.save_model_as("model_1_vt3", app.ai.model_1)
+    # app.ai.save_model_as("model_2_vt3", app.ai.model_2)
 
     ########################
 
@@ -275,8 +281,8 @@ if __name__ == "__main__":
     ########################
 
     # app.training_data_handler.extract_data()
-    # app.training_data_handler.save_extracted("{0}{1}".format(RESULTS_PATH, "resultextract_player_1_v10.csv"), 1)
-    # app.training_data_handler.save_extracted("{0}{1}".format(RESULTS_PATH,"resultextract_player_2_v10.csv"), 2)
+    # app.training_data_handler.save_extracted("{0}{1}".format(RESULTS_PATH, "resultextract_player_1_vt2.csv"), 1)
+    # app.training_data_handler.save_extracted("{0}{1}".format(RESULTS_PATH,"resultextract_player_2_vt2.csv"), 2)
 
 
 

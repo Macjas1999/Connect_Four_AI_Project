@@ -9,6 +9,7 @@ from AnalyzeLayout import AnalyzeLayout
 from TrainingDataHandler import TrainingDataHandler
 
 HUMAN_AI_GAMES = "/home/maciej/Desktop/Python/Connect_Four_AI_Project/dataHA/"
+ARCHV_DATA = "/home/maciej/Desktop/Python/Connect_Four_AI_Project/dataONW/" 
 
 DATA_PATH = "/home/maciej/Desktop/Python/Connect_Four_AI_Project/dataBuff/"
 RESULTS_PATH = "/home/maciej/Desktop/Python/Connect_Four_AI_Project/results/"
@@ -16,12 +17,11 @@ RESULTS_PATH = "/home/maciej/Desktop/Python/Connect_Four_AI_Project/results/"
 RESULTS_EXT_ONE = "resultextract_player_1_vBuff.csv"
 RESULTS_EXT_TWO = "resultextract_player_2_vBuff.csv"
 
-MODEL_ONE_SAVED_FILENAME = "model_1_v10.h5"
-MODEL_TWO_SAVED_FILENAME = "model_2_v10.h5"
+MODEL_ONE_SAVED_FILENAME = "model_1_vt3.h5"
+MODEL_TWO_SAVED_FILENAME = "model_2_vt3.h5"
 
-MODEL_ONE_NAME = "model_1_v10"
-MODEL_TWO_NAME = "model_2_v10"
-
+MODEL_ONE_NAME = "model_1_vt3"
+MODEL_TWO_NAME = "model_2_vt3"
 
 SLEEP_TIME = 0.2
 
@@ -182,7 +182,7 @@ class Board:
                 os.system('tput clear') #displaying only one board            
 
     def main_loop(self):
-        self.seed = random.randint(1000, 9999)
+        self.seed = random.randint(100000, 999999)
         self.human_turn = random.randint(1,2)
         while self.run:
             self.draw_board()
@@ -216,6 +216,8 @@ class Board:
                 print('Invalid input')
                 #x = input('Enter anything to continue')
                 os.system('tput clear')
+        #self.records.snapGamestateEveryturn(self.seed, self.array, self.turn_counter, self.analyzer.playerONEscore, self.analyzer.playerTWOscore, DATA_PATH)
+        #self.records.snapGamestateEveryturn(self.seed, self.array, self.turn_counter, self.analyzer.playerONEscore, self.analyzer.playerTWOscore, ARCHV_DATA)
 
     def remove_files(self, directory):
         for filename in os.listdir(directory):

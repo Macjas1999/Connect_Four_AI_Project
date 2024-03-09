@@ -3,7 +3,7 @@ from keras.models import Sequential
 from keras.models import save_model
 from keras.models import load_model
 from keras.optimizers import Adam
-from keras.layers import Dense
+from keras.layers import Dense, LeakyReLU, Dropout
 from keras.utils import to_categorical
 from TrainingDataHandler import TrainingDataHandler
 
@@ -19,9 +19,16 @@ class ConnectFourAI:
     def build_model(self):
         model = Sequential()
         model.add(Dense(64, input_dim=42, activation='relu'))
-        model.add(Dense(64, activation='relu'))
+        model.add(LeakyReLU(alpha=0.01))
+        model.add(Dense(128, activation='relu'))
+        model.add(LeakyReLU(alpha=0.01))
+        model.add(Dense(128, activation='relu'))
+        model.add(LeakyReLU(alpha=0.01))
+        model.add(Dense(128, activation='relu'))
+        model.add(LeakyReLU(alpha=0.01))
+        model.add(Dropout(0.5))
         model.add(Dense(7, activation='linear'))  # Single output neuron for the score
-        optimizer = Adam(lr=0.001)  # Adaptive stuff was 001
+        optimizer = Adam(lr=0.0001)  # Adaptive stuff was 001
         model.compile(optimizer=optimizer, loss='mean_squared_error', metrics=['mae'])
         return model
 

@@ -4,3 +4,8 @@ ai.model.save_weights('trained_weights.h5')
 # Load the weights into a new model with the same architecture
 loaded_model = your_model_architecture()
 loaded_model.load_weights('trained_weights.h5')
+
+
+model v11 - only human vs ai training
+
+ONW - means that reward system is based only on winning and losing, not analyzing whole board and assigning points

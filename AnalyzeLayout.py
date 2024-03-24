@@ -34,7 +34,7 @@ class AnalyzeLayout:
         # self.playerONEscore -= self.playerONE_fill_miss
         # self.playerTWOscore -= self.playerTWO_fill_miss
 
-        self.check_draw(array)
+        self.check_draw_reward(array)
         
     def reset_analyzer(self):
         self.playerONEscore = 0
@@ -192,7 +192,59 @@ class AnalyzeLayout:
     #     else:
     #         pass
 
-    def check_draw(self, array):
+    def check_draw_reward(self, array):
         if all(all(cell != 0 for cell in row) for row in array):
             self.playerONEscore = 0
             self.playerTWOscore = 0
+
+#Winning analisys
+    def run_win_check(self, array):
+        if self.check_vertical(array) != 0:
+            return self.check_vertical(array)
+        elif self.check_horizontal(array) != 0:
+            return self.check_horizontal(array)
+        elif self.check_diagonal_f(array) != 0:
+            return self.check_diagonal_f(array)
+        elif self.check_diagonal_b(array) != 0:
+            return self.check_diagonal_b(array)
+        elif self.check_draw(array) == 3:
+            return 3
+
+
+    def check_vertical(self, array):
+        for i in range(0, 3):
+            for j in range(0, 7):
+                if array[i][j] == array[i+1][j] == array[i+2][j] == array[i+3][j]:
+                    if array[i][j] != 0:
+                        return array[i][j]
+        return 0
+
+    def check_horizontal(self, array):
+        for i in range(0, 6):
+            for j in range(0, 4):
+                if array[i][j] == array[i][j+1] == array[i][j+2] == array[i][j+3]:
+                    if array[i][j] != 0:
+                        return array[i][j]
+        return 0
+
+
+    def check_diagonal_f(self, array):
+        for i in range(0,3):
+            for j in range(0,4):
+                if array[i][j] == array[i+1][j+1] == array[i+2][j+2] == array[i+3][j+3]:
+                    if array[i][j] != 0:
+                        return array[i][j]
+        return 0
+
+
+    def check_diagonal_b(self, array):
+        for i in range(3,6):
+            for j in range(0,4):
+                if array[i][j] == array[i-1][j+1] == array[i-2][j+2] == array[i-3][j+3]:
+                    if array[i][j] != 0:
+                        return array[i][j]
+        return 0
+
+    def check_draw(self, array):
+        if all(all(cell != 0 for cell in row) for row in array):
+            return 3

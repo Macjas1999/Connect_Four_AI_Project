@@ -1,6 +1,5 @@
 import csv
 
-
 class RecordGamestate:
     def __init__(self) -> None:
         self.recordedGameArray = []
@@ -15,8 +14,8 @@ class RecordGamestate:
             write = csv.writer(file)
             write.writerows(array)
 
-    def snapGamestateEveryturn(self, seed, array, turn, score1, score2, folder):
-        stringpath = "{0}{1}{2}{3}{4}{5}{6}{7}{8}".format(folder, seed, "|t_", turn, "|p1_", score1, "|p2_", score2, ".csv")
+    def snapGamestateEveryturn(self, seed, array, turn, selected_column, score1, score2, folder):
+        stringpath = "{0}{1}{2}{3}{4}{5}{6}{7}{8}{9}{10}".format(folder, seed, "|t_", turn, "|sc_", selected_column, "|p1_", score1, "|p2_", score2, ".csv")
         file = open(stringpath, 'w+', newline ='')
         with file:
             write = csv.writer(file)

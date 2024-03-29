@@ -8,11 +8,6 @@ class AnalyzeLayout:
     def __init__(self):
         self.playerONEscore = 0
         self.playerTWOscore = 0
-        #self.random_input_game = use_rand
-
-        # self.playerONE_fill_miss = 0
-        # self.playerTWO_fill_miss = 0
-
 
     def analyzeBoard(self, array):
         self.playerONEscore = 0
@@ -31,18 +26,12 @@ class AnalyzeLayout:
         self.c2_diagonal_f(array)
         self.c2_diagonal_b(array)
 
-        # self.playerONEscore -= self.playerONE_fill_miss
-        # self.playerTWOscore -= self.playerTWO_fill_miss
-
         self.check_draw_reward(array)
         
     def reset_analyzer(self):
         self.playerONEscore = 0
         self.playerTWOscore = 0
-        #self.random_input_game = use_rand
 
-        # self.playerONE_fill_miss = 0
-        # self.playerTWO_fill_miss = 0
 
     def c1_all(self, array):
         for i in range(0,6):
@@ -55,7 +44,7 @@ class AnalyzeLayout:
                     case 2:
                         self.playerTWOscore += REWARD_ONE
 
-
+### Score calculation
     #3 in row
     def c3_vertical(self, array):
         for i in range(0, 4):
@@ -184,20 +173,13 @@ class AnalyzeLayout:
                         else:
                             self.playerTWOscore += RWARD_WIN
 
-    # def penalty_for_filling_filled(self, player):
-    #     if player == 1:
-    #         self.playerONE_fill_miss += PENALTY_FILLED_UP_TRY
-    #     elif player == 2:
-    #         self.playerTWO_fill_miss += PENALTY_FILLED_UP_TRY
-    #     else:
-    #         pass
 
     def check_draw_reward(self, array):
         if all(all(cell != 0 for cell in row) for row in array):
             self.playerONEscore = 0
             self.playerTWOscore = 0
 
-#Winning analisys
+### Winning analisys
     def run_win_check(self, array):
         if self.check_vertical(array) != 0:
             return self.check_vertical(array)

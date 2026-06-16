@@ -12,7 +12,7 @@ if str(PROJECT_ROOT) not in sys.path:
 from AnalyzeLayout import AnalyzeLayout, RWARD_WIN
 
 
-class WinMoveAnalyzer:
+class Referee:
     @staticmethod
     def check_vertical(board):
         for i in range(0, 3):
@@ -56,10 +56,10 @@ class WinMoveAnalyzer:
     @staticmethod
     def find_winner(board):
         for check in (
-            WinMoveAnalyzer.check_vertical,
-            WinMoveAnalyzer.check_horizontal,
-            WinMoveAnalyzer.check_diagonal_b,
-            WinMoveAnalyzer.check_diagonal_f,
+            Referee.check_vertical,
+            Referee.check_horizontal,
+            Referee.check_diagonal_b,
+            Referee.check_diagonal_f,
         ):
             winner = check(board)
             if winner != 0:
@@ -98,7 +98,7 @@ class MoveAnalyzer:
 
         simulated = copy.deepcopy(board)
         simulated[row][column] = opponent
-        return WinMoveAnalyzer.find_winner(simulated) == opponent
+        return Referee.find_winner(simulated) == opponent
 
     def _evaluate_move(self, board, column, player):
         row = self.landing_row(board, column)
@@ -108,7 +108,7 @@ class MoveAnalyzer:
         simulated = copy.deepcopy(board)
         simulated[row][column] = player
 
-        if WinMoveAnalyzer.find_winner(simulated) == player:
+        if Referee.find_winner(simulated) == player:
             return self.INSTANT_WIN_WEIGHT
 
         weight = self._score_board(simulated, player)
@@ -164,7 +164,7 @@ class MoveAnalyzer:
         print('=' * 17)
         print('  ', end='')
         for column in range(7):
-            print(f'{column + 1} ', end='')
+            print(f' {column + 1}  ', end='')
         print('\n')
 
     def draw_maps(self, board):
@@ -184,9 +184,9 @@ class MoveAnalyzer:
         best_p1 = self.best_move(1, board)
         best_p2 = self.best_move(2, board)
         if best_p1 is not None:
-            print(f'Best move for X: column {best_p1 + 1}')
+            print(f'Best move for P1 (X): column {best_p1 + 1}')
         if best_p2 is not None:
-            print(f'Best move for O: column {best_p2 + 1}')
+            print(f'Best move for P2 (O): column {best_p2 + 1}')
         print('')
 
 
@@ -239,7 +239,7 @@ class Board:
                     continue
 
     def look_for_win_move(self):
-        self.winning = WinMoveAnalyzer.find_winner(self.array)
+        self.winning = Referee.find_winner(self.array)
         if self.winning != 0:
             os.system('tput clear')
             self.draw_board()
@@ -248,7 +248,7 @@ class Board:
             self.run = False
             return
 
-        if WinMoveAnalyzer.check_draw(self.array):
+        if Referee.check_draw(self.array):
             print("It's a draw!")
             self.run = False
 

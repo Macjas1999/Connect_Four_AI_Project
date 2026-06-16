@@ -1,8 +1,14 @@
 import numpy as np
-from keras.models import Sequential, save_model, load_model
-from keras.optimizers import Adam
-from keras.layers import Dense, LeakyReLU, Dropout, Flatten, Reshape, Conv2D, MaxPooling2D
-from keras.utils import to_categorical
+try:
+    from tensorflow.keras.models import Sequential, save_model, load_model  # pyright: ignore[reportMissingImports]
+    from tensorflow.keras.optimizers import Adam  # pyright: ignore[reportMissingImports]
+    from tensorflow.keras.layers import Dense, LeakyReLU, Dropout, Flatten, Reshape, Conv2D, MaxPooling2D  # pyright: ignore[reportMissingImports]
+    from tensorflow.keras.utils import to_categorical  # pyright: ignore[reportMissingImports]
+except ModuleNotFoundError:
+    from keras.models import Sequential, save_model, load_model  # pyright: ignore[reportMissingImports]
+    from keras.optimizers import Adam  # pyright: ignore[reportMissingImports]
+    from keras.layers import Dense, LeakyReLU, Dropout, Flatten, Reshape, Conv2D, MaxPooling2D  # pyright: ignore[reportMissingImports]
+    from keras.utils import to_categorical  # pyright: ignore[reportMissingImports]
 
 from TrainingDataHandler import TrainingDataHandler
 

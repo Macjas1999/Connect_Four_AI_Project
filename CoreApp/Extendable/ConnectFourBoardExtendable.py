@@ -6,13 +6,13 @@ import tkinter as tk
 from tkinter import messagebox
 from termcolor import colored
 
-PROJECT_ROOT = Path(__file__).resolve().parents[2]
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from CoreApp.Extendable.Referee import Referee
-from CoreApp.Extendable.ConnectFourGUI import ConnectFourGUI
-from CoreApp.Extendable.MoveAnalyzer import MoveAnalyzer
+from Extendable.Referee import Referee
+from Extendable.ConnectFourGUI import ConnectFourGUI
+from Extendable.MoveAnalyzer import MoveAnalyzer
 
 class Board:
     def __init__(self, rows=6, cols=7):

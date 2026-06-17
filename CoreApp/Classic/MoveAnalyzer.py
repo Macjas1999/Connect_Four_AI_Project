@@ -1,8 +1,8 @@
 import copy
 from termcolor import colored
 
-from CoreApp.Classic.AnalyzeLayout import AnalyzeLayout, RWARD_WIN
-from CoreApp.Classic.Referee import Referee
+from Classic.AnalyzeLayout import AnalyzeLayout, RWARD_WIN
+from Classic.Referee import Referee
 
 class MoveAnalyzer:
     INSTANT_WIN_WEIGHT = RWARD_WIN * 10

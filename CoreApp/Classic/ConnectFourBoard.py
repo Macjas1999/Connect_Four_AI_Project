@@ -1,6 +1,7 @@
 import copy
 import os
 import sys
+import time
 from pathlib import Path
 from termcolor import colored
 
@@ -8,9 +9,9 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from CoreApp.Classic.AnalyzeLayout import AnalyzeLayout, RWARD_WIN
-from CoreApp.Classic.Referee import Referee
-from CoreApp.Classic.MoveAnalyzer import MoveAnalyzer
+from Classic.AnalyzeLayout import AnalyzeLayout, RWARD_WIN
+from Classic.Referee import Referee
+from Classic.MoveAnalyzer import MoveAnalyzer
 
 
 class Board:
@@ -75,7 +76,8 @@ class Board:
             print("It's a draw!")
             self.run = False
 
-    def main_loop(self):
+### Main loops for the game
+    def main_loop_dev_mode(self):
         turn = 1
         while self.run:
             self.draw_board()
@@ -109,7 +111,129 @@ class Board:
                 input('Enter anything to continue')
                 os.system('tput clear')
 
+    def main_loop_pvp(self):
+        turn = 1
+        while self.run:
+            self.draw_board()
+
+            print(f'Player: {turn}')
+            try:
+                x = input()
+                if x == 'e':
+                    self.run = False
+                    break
+
+                column = int(x) - 1
+                if column < 0 or column > 6:
+                    raise ValueError("Column out of range")
+
+                if self.add_piece(column, turn):
+                    self.look_for_win_move()
+                    if turn == 1:
+                        turn = 2
+                        self.player_turn = turn
+                    else:
+                        turn = 1
+                        self.player_turn = turn
+                else:
+                    raise ValueError("Column is full")
+                os.system('tput clear')
+            except ValueError:
+                print('Invalid input')
+                input('Enter anything to continue')
+                os.system('tput clear')
+
+    def main_loop_ai(self, user_choice):
+        turn = 1
+        if user_choice == 1:
+            self.ai_player = 2
+            self.human_player = 1
+        else:
+            self.ai_player = 1
+            self.human_player = 2
+
+        while self.run:
+            self.draw_board()
+            self.move_analyzer.analyze(self.array)
+            #self.move_analyzer.draw_maps(self.array)
+
+            print(f'Player: {turn}')
+            if turn == self.human_player:
+                try:
+                    x = input()
+                    if x == 'e':
+                        self.run = False
+                        break
+
+                    column = int(x) - 1
+                    if column < 0 or column > 6:
+                        raise ValueError("Column out of range")
+
+                    if self.add_piece(column, turn):
+                        self.look_for_win_move()
+                        if turn == 1:
+                            turn = 2
+                            self.player_turn = turn
+                        else:
+                            turn = 1
+                            self.player_turn = turn
+                    else:
+                        raise ValueError("Column is full")
+                    os.system('tput clear')
+                except ValueError:
+                    print('Invalid input')
+                    input('Enter anything to continue')
+                    os.system('tput clear')
+            else:
+                print('AI is thinking...')
+                time.sleep(1) # Simulate thinking time
+                column = self.move_analyzer.best_move(self.ai_player, self.array)
+                if self.add_piece(column, turn):
+                    self.look_for_win_move()
+                    if turn == 1:
+                        turn = 2
+                        self.player_turn = turn
+                    else:
+                        turn = 1
+                        self.player_turn = turn
+                else:
+                    print('AI made an invalid move')
+                    input('Enter anything to continue')
+                    os.system('tput clear')
 
 if __name__ == "__main__":
     app = Board()
-    app.main_loop()
+    print('Welcome to Connect Four! \n' \
+    'Input "1" for Player vs Player \n' \
+    'Input "2" for Player vs AI \n' \
+    'Input "3" for dev mode \n' \
+    'Input "e" to exit')
+    try:
+        x = input(': ')
+        
+        os.system('tput clear')
+        if x == 'e':
+            sys.exit()
+
+        elif x == '1':
+            app.main_loop_pvp()
+
+        elif x == '2':
+            y = input('Play as Player 1 or Player 2? (Input "1" or "2"): ')
+            os.system('tput clear')
+            if y == '1':
+                app.main_loop_ai(1)
+            elif y == '2':
+                app.main_loop_ai(2)
+            else:
+                print('Invalid input')
+                input('Enter anything to continue')
+                os.system('tput clear')
+
+        elif x == '3':
+            app.main_loop_dev_mode()
+
+    except ValueError:
+        print('Invalid input')
+        input('Enter anything to continue')
+        os.system('tput clear')

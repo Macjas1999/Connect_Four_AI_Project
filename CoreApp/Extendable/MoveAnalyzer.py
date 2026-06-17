@@ -1,7 +1,7 @@
 import copy
 from termcolor import colored
 
-from CoreApp.Extendable.AnalyzeLayoutExtendable import AnalyzeLayout
+from Extendable.AnalyzeLayoutExtendable import AnalyzeLayout
 
 class MoveAnalyzer:
     """Analyzes possible moves for each player and displays weight maps"""

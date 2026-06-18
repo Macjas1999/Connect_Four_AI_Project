@@ -25,11 +25,9 @@ class MoveAnalyzer:
         """Find the row where a piece would land in a column"""
         for row in range(len(board) - 1, -1, -1):
             cell = board[row][column]
-            # treat both empty (0) and disabled ('N') cells as not playable
+            # Return the first empty cell (0) - both regular pieces and disabled pieces act as obstacles
             if cell == 0:
                 return row
-            elif isinstance(cell, str) and cell.startswith('N'):
-                continue
         return None
 
     @staticmethod

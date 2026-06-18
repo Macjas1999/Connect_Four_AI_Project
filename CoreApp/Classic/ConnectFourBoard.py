@@ -12,14 +12,19 @@ if str(PROJECT_ROOT) not in sys.path:
 from Classic.AnalyzeLayout import AnalyzeLayout, RWARD_WIN
 from Classic.Referee import Referee
 from Classic.MoveAnalyzer import MoveAnalyzer
+from Classic.ConnectFourGUI import ConnectFourGUI
 
 
 class Board:
     def __init__(self):
-        self.array = [[0] * 7 for _ in range(6)]
+        self.rows = 6
+        self.cols = 7
+        self.array = [[0] * self.cols for _ in range(self.rows)]
         self.winning = 0
         self.run = True
         self.player_turn = 1
+        self.player_one_wins = 0
+        self.player_two_wins = 0
         self.move_analyzer = MoveAnalyzer()
         self.clear()
 
@@ -76,8 +81,34 @@ class Board:
             print("It's a draw!")
             self.run = False
 
+    def check_game_end(self):
+        self.winning = Referee.find_winner(self.array)
+        if self.winning != 0:
+            self.run = False
+            if self.winning == 1:
+                self.player_one_wins = 1
+            elif self.winning == 2:
+                self.player_two_wins = 1
+            return self.winning
+        if Referee.check_draw(self.array):
+            self.run = False
+            return 0
+        return None
+
+    def handle_connect_fours(self):
+        self.check_game_end()
+
+    def check_board_state(self):
+        if self.run:
+            self.check_game_end()
+
 ### Main loops for the game
-    def main_loop_dev_mode(self):
+    def main_loop_dev_mode(self, use_gui=False):
+        if use_gui:
+            gui = ConnectFourGUI(self)
+            gui.root.mainloop()
+            return
+
         turn = 1
         while self.run:
             self.draw_board()
@@ -111,7 +142,12 @@ class Board:
                 input('Enter anything to continue')
                 os.system('tput clear')
 
-    def main_loop_pvp(self):
+    def main_loop_pvp(self, use_gui=False):
+        if use_gui:
+            gui = ConnectFourGUI(self)
+            gui.root.mainloop()
+            return
+
         turn = 1
         while self.run:
             self.draw_board()
@@ -143,7 +179,7 @@ class Board:
                 input('Enter anything to continue')
                 os.system('tput clear')
 
-    def main_loop_ai(self, user_choice):
+    def main_loop_ai(self, user_choice, use_gui=False):
         turn = 1
         if user_choice == 1:
             self.ai_player = 2
@@ -151,6 +187,11 @@ class Board:
         else:
             self.ai_player = 1
             self.human_player = 2
+
+        if use_gui:
+            gui = ConnectFourGUI(self)
+            gui.root.mainloop()
+            return
 
         while self.run:
             self.draw_board()
@@ -215,23 +256,29 @@ if __name__ == "__main__":
         if x == 'e':
             sys.exit()
 
-        elif x == '1':
-            app.main_loop_pvp()
+        use_gui = False
+        if x in ('1', '2', '3'):
+            gui_choice = input('Open GUI for this mode? (y/N): ').strip().lower()
+            use_gui = gui_choice == 'y'
+            os.system('tput clear')
+
+        if x == '1':
+            app.main_loop_pvp(use_gui=use_gui)
 
         elif x == '2':
             y = input('Play as Player 1 or Player 2? (Input "1" or "2"): ')
             os.system('tput clear')
             if y == '1':
-                app.main_loop_ai(1)
+                app.main_loop_ai(1, use_gui=use_gui)
             elif y == '2':
-                app.main_loop_ai(2)
+                app.main_loop_ai(2, use_gui=use_gui)
             else:
                 print('Invalid input')
                 input('Enter anything to continue')
                 os.system('tput clear')
 
         elif x == '3':
-            app.main_loop_dev_mode()
+            app.main_loop_dev_mode(use_gui=use_gui)
 
     except ValueError:
         print('Invalid input')
